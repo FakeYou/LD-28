@@ -24,8 +24,8 @@ Map = function(game) {
     '           #·#          #·····# ',
     '           #·############·····# ',
     '           #··················# ',
-    '           ####·############### ',
-    ' ##########   #·#     #····#    ',
+    '           ###···############## ',
+    ' ##########  ##·##    #····#    ',
     ' #········##  #·#     #·#··#    ',
     ' #··####···#  #·#     #·#··#    ',
     ' #·········#  #·#     #·######  ',
@@ -82,6 +82,14 @@ Map.prototype.getTile = function(x, y) {
   }
 }
 
+Map.prototype.getMapTile = function(x, y) {
+  if(x < 0 || y < 0 || x >= this.width || y >= this.height) {
+    return null
+  }
+
+  return this.tiles[y][x];
+}
+
 Map.prototype.buildTiles = function() {
   for(var y = 0; y < this.height; y++) {
     this.tiles[y] = [];
@@ -129,6 +137,12 @@ Map.prototype.update = function(delta) {
     var key = entity.x + ',' + entity.y;
 
     this._entitiesLookup[key] = entity;
+  }
+
+  for(var y = 0; y < this.height; y++) {
+    for(var x = 0; x < this.width; x++) {
+      this.tiles[y][x].update(delta);
+    }
   }
 }
 

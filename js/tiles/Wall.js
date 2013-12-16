@@ -11,7 +11,7 @@ Wall = function(game) {
 
   this.setFrontColor([
     color + chance.integer({ min: 0, max: 10 }),
-    color + chance.integer({ min: 150, max: 200 }),
+    color + chance.integer({ min: 50, max: 75 }),
     color + chance.integer({ min: 0, max: 10 }),
   ]);
 }

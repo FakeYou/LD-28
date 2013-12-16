@@ -11,23 +11,26 @@ UI.Menu = function(game) {
   this.playButton.enabled = true;
   this.addElement(this.playButton);
 
-  this.restartButton = new UI.Element(this, 'restart', assets.restartButton, 21, 18, [255, 255, 255], false);
+  this.resumeButton = new UI.Element(this, 'resume', assets.resumeButton, 21, 18, [0, 0, 0], false);
+  this.resumeButton.enabled = false;
+  this.addElement(this.resumeButton);
+
+  this.restartButton = new UI.Element(this, 'restart', assets.restartButton, 21, 20, [255, 255, 255], false);
   this.restartButton.enabled = false;
   this.addElement(this.restartButton);
 
-  this.ludumButton = new UI.Element(this, 'ludum', assets.ludumButton, 21, 20, [255, 255, 255], false);
-  this.ludumButton.enabled = true;
-  this.addElement(this.ludumButton);
+  this.volumeLabel = new UI.Element(this, 'volume', assets.volumeLabel, 21, 22, [255, 255, 255], false);
+  this.volumeLabel.enabled = true;
+  this.addElement(this.volumeLabel);
 
-  this.websiteButton = new UI.Element(this, 'ludum', assets.websiteButton, 21, 22, [255, 255, 255], false);
-  this.websiteButton.enabled = true;
-  this.addElement(this.websiteButton);
+  this.volumeBar = new UI.Element(this, 'volumeBar', assets.volumeBar, 26, 23, [255, 255, 255], false);
+  this.addElement(this.volumeBar);
 
   this.buttons = [
     this.playButton,
+    this.resumeButton,
     this.restartButton,
-    this.ludumButton,
-    this.websiteButton
+    this.volumeLabel,
   ];
 
   this.border = new UI.Element(this, null, assets.menu, 19, 2, [208, 183, 38], false);
@@ -41,13 +44,36 @@ UI.Menu.prototype = Object.create(UI.prototype);
 UI.Menu.prototype.update = function(delta) {
   var moveUpKey = this.game.keyboard.getKey(Keyboard.UP);
   var moveDownKey = this.game.keyboard.getKey(Keyboard.DOWN);
+  var moveRightKey = this.game.keyboard.getKey(Keyboard.RIGHT);
+  var moveLeftKey = this.game.keyboard.getKey(Keyboard.LEFT);
   var selectItemKey = this.game.keyboard.getKey(Keyboard.SPACE);
 
   var index = this.buttons.indexOf(this.selected);
 
+  var volumeBarLength = Math.round(this.volumeBar.tiles[0].length * this.game.volume);
+
+  for(var i = 0; i < this.volumeBar.tiles[0].length; i++) {
+    var tile = this.volumeBar.tiles[0][i];
+
+    if(i < volumeBarLength) {
+      tile.character = '█';
+      tile.setFrontColor([208, 183, 38])
+    }
+    else {
+      tile.character = '▒';
+      tile.setFrontColor([208, 183, 38])
+    }
+  }
+
   if(this.game.started) {
-    this.playButton.enabled = false;
     this.restartButton.enabled = true;
+    this.resumeButton.enabled = true;
+    this.playButton.enabled = false;
+  }
+  else {
+    this.restartButton.enabled = false;
+    this.resumeButton.enabled = false;
+    this.playButton.enabled = true;
   }
 
   if(moveUpKey.hit) {
@@ -62,14 +88,29 @@ UI.Menu.prototype.update = function(delta) {
     }
   }
 
+  if(moveRightKey.hit && this.selected == this.volumeLabel && this.game.volume < 1) {
+    this.game.sounds.menuSelect.start();
+    this.game.volume += 1 * delta;
+  }
+
+  if(moveLeftKey.hit && this.selected == this.volumeLabel && this.game.volume > 0) {
+    this.game.sounds.menuSelect.start();
+    this.game.volume -= 1 * delta
+  }
+
   if(selectItemKey.hit) {
+    this.game.sounds.menuSelect.start();
     if(this.selected == this.playButton) {
       this.game.changeState(Game.ITEMSELECTION);
+    }
+    if(this.selected == this.resumeButton) {
+      this.game.changeState(Game.PLAYING);
     }
   }
 }
 
 UI.Menu.prototype.setSelected = function(element) {
+  this.game.sounds.menuSelect.start();
   for(var i = 0; i < this.buttons.length; i++) {
     var button = this.buttons[i];
 

@@ -92,6 +92,7 @@ UI.ItemSelection.prototype.update = function(delta) {
   }
 
   if(selectItemKey.hit) {
+    this.game.sounds.menuSelect.start();
     this.game.changeState(Game.PLAYING);
 
     if(this.selected == this.sword) { this.game.player.item = Player.SWORD }
@@ -106,6 +107,7 @@ UI.ItemSelection.prototype.update = function(delta) {
 }
 
 UI.ItemSelection.prototype.setSelected = function(element) {
+  this.game.sounds.menuSelect.start();
   for(var i = 0; i < this.items.length; i++) {
     var item = this.items[i];
 

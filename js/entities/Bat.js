@@ -4,6 +4,8 @@ Bat = function(game, x, y) {
   this.game = game;
 
   this.speed = 5;
+  this.damage = 1;
+  this.cooldown = 0;
 
   this.setFrontColor([0, 255, 255]);
   this.lit = false;
@@ -17,6 +19,8 @@ Bat.prototype = Object.create(Tile.prototype);
 Bat.prototype.update = function(delta) {
   var playerX = this.game.player.x;
   var playerY = this.game.player.y;
+
+  this.cooldown -= delta;
 
   if(this.distanceFrom(playerX, playerY) < 8) {
     this.target.x = playerX;
@@ -47,4 +51,11 @@ Bat.prototype.update = function(delta) {
 
   this.x = Math.round(this._x);
   this.y = Math.round(this._y);
+
+  if(this.x == playerX && this.y == playerY && this.cooldown < 0) {
+    this.game.player.health -= this.damage;
+    this.game.player.sounds.takeDamage.start();
+    this.cooldown = 1;
+    console.log('bam')
+  }
 }

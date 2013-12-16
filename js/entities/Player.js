@@ -14,7 +14,16 @@ Player = function(game) {
   this.duration = 0;
   this.cooldown = 0;
 
+  this.sounds = {
+    takeDamage: new Sound(this.game, 'js/assets/playerTakeDamage', ['wav'], 1, false),
+    speedBoost: new Sound(this.game, 'js/assets/playerSpeedBoost', ['wav'], 1, false)
+  }
+
   this.dir = { x: 0, y: 0 };
+
+  this.health = 10;
+
+  this.item = Player.BOOTS;
 
   // this.corruption = new Tile.Effect(this, 2, {
   //   before: function() { },
@@ -50,6 +59,10 @@ Player.prototype.update = function(delta) {
 
   this.cooldown -= delta;
   this.duration -= delta;
+
+  for(var key in this.sounds) {
+    this.sounds[key].update(delta);
+  }
 
   if(moveUpKey.pressed) {
     if(this.game.map.getTile(this.x, this.y - 1).walkable) {
@@ -92,16 +105,22 @@ Player.prototype.update = function(delta) {
   if(menuKey.hit) {
     this.game.changeState(Game.MENU);
     this.game.menu.update(delta);
-    this.game.menu.setSelected(this.game.menu.restartButton);
-
-    console.log(this.game.menu.buttons[0])
+    this.game.menu.setSelected(this.game.menu.resumeButton);
   }
 
   this.x = Math.round(this._x);
   this.y = Math.round(this._y);
 
-  // this.sword.update(delta);
-  // this.corruption.update(delta);
+  var currentTile = this.game.map.getMapTile(this.x, this.y);
+  if(currentTile instanceof Floor) {
+    if(this.item == Player.BOOTS && this.duration > 0) {
+      currentTile.highlight([245, 55, 58], 2);
+    }
+    else {
+      currentTile.highlight([200, 200, 200], 1);
+    }
+  }
+
   this.light.setPosition(this.x, this.y);
 }
 
@@ -134,10 +153,10 @@ Player.prototype.bootsUpdate = function(delta) {
   var actionKey = this.game.keyboard.getKey(Keyboard.SPACE);
 
   if(actionKey.hit && this.cooldown < 0) {
-    console.log('woosh');
+    this.sounds.speedBoost.start();
     this.speed = 25;
-    this.duration = 1.5;
-    this.cooldown = 4;
+    this.duration = 0.75;
+    this.cooldown = 2;
   }
 
   if(this.duration <= 0) {

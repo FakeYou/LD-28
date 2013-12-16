@@ -16,11 +16,19 @@ Game = function(domElement) {
   this.bat = new Bat(this, 20, 7);
   this.map.addEntity(this.bat);
 
+  this.volume = 1;
+
+  this.sounds = {
+    menuSelect: new Sound(this, 'js/assets/menuSelect', ['wav'], 1, false)
+  }
+
   this.itemSelection = new UI.ItemSelection(this);
   this.menu = new UI.Menu(this);
+  this.hud = new UI.Hud(this);
 
   this.uis = [
     this.menu,
+    this.hud,
     this.itemSelection,
   ]
 
@@ -71,10 +79,15 @@ Game.prototype.update = function() {
 
   this.keyboard.update(this.delta);
 
+  for(var key in this.sounds) {
+    this.sounds[key].update(this.delta);
+  }
+
   if(this.state == Game.PLAYING) {
     this.player.update(this.delta);
     this.bat.update(this.delta);
     this.map.update(this.delta);
+    this.hud.update(this.delta);
   }
   else if(this.state == Game.ITEMSELECTION) {
     this.itemSelection.update(this.delta);
@@ -91,12 +104,14 @@ Game.prototype.changeState = function(state) {
   this.state = state;
   this.itemSelection.visible = false;
   this.menu.visible = false;
+  this.hud.visible = false;
 
   if(state == Game.ITEMSELECTION) {
     this.itemSelection.visible = true;
   }
   else if(state == Game.PLAYING) {
     this.started = true;
+    this.hud.visible = true;
   }
   else if(state == Game.MENU) {
     this.menu.visible = true;

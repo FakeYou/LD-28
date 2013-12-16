@@ -98,6 +98,24 @@ window.assets.luteSelectMessage = [
   '                                                        ',
 ];
 
+window.assets.hud = [
+  '           ┌────── HEALTH ───────┐   ┌───── COOLDOWN ──────┐           ',
+  '           │                     │   │                     │           ',
+  '           └─────────────────────┘   └─────────────────────┘           ',
+]
+
+window.assets.healthBar = [
+  '▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒',
+]
+
+window.assets.cooldownBar = [
+  '▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒',
+]
+
+window.assets.maptimeBar = [
+  '▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒',
+]
+
 window.assets.menu = [
   '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓',
   '┃                                ┃',
@@ -112,6 +130,7 @@ window.assets.menu = [
   '┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛',
   ' ┃                              ┃ ',
   '┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓',
+  '┃                                ┃',
   '┃                                ┃',
   '┃                                ┃',
   '┃                                ┃',
@@ -142,14 +161,22 @@ window.assets.playButton = [
   '          START GAME          '
 ];
 
+window.assets.resumeButton = [
+  '            RESUME            '
+];
+
 window.assets.restartButton = [
   '        RESTART LEVEL         '
+];
+
+window.assets.volumeLabel = [
+  '            VOLUME            '
+];
+
+window.assets.volumeBar = [
+  '▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒'
 ]
 
 window.assets.ludumButton = [
   '       LUDUM DARE PAGE        '
-];
-
-window.assets.websiteButton = [
-  '        WWW.NANNIN.GA         '
 ];

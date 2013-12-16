@@ -22,6 +22,10 @@ Tile.BLACK = [0, 0, 0];
 Tile.PINK = [255, 0, 255];
 Tile.GREY = [100, 100, 100];
 
+Tile.prototype.update = function(delta) {
+
+}
+
 Tile.prototype.setPosition = function(x, y) {
   this.x = x;
   this.y = y;
