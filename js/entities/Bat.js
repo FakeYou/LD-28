@@ -6,7 +6,7 @@ Bat = function(game, x, y) {
   this.isMob = true;
   this.alive = true;
 
-  this.speed = 5;
+  this.speed = 3.5;
   this.damage = 1;
   this.cooldown = 0;
 

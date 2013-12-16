@@ -18,7 +18,7 @@ Potion = function(game, x, y) {
     pickup: new Sound(this.game, 'js/assets/potionPickup', ['wav'], 1, false),
   }
 
-  this.strength = 5;
+  this.strength = 3;
   this.cooldown = 1;
 }
 

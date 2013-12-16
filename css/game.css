@@ -15,6 +15,10 @@
     url('../fonts/SourceCodePro-Regular.ttf.woff') format('woff')
 }
 
+body {
+  background-color: black;
+}
+
 #canvas, .test {
   font-family: "SourceCodePro", "Source Code Pro", monospace;
   white-space: pre;
@@ -22,5 +26,6 @@
   line-height: 20px;
   letter-spacing: 4px;
   font-size: 16px;
-  display: inline-block;
+  display: block;
+  margin: 0 auto;
 }

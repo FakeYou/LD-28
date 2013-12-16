@@ -4,7 +4,7 @@ Player = function(game, x, y) {
   this.game = game;
 
   this.speed = 10;
-  this.health = 10;
+  this.health = 5;
   this.damage = 2;
   this.alive = true;
 
@@ -21,6 +21,7 @@ Player = function(game, x, y) {
     speedBoost: new Sound(this.game, 'js/assets/playerSpeedBoost', ['wav'], 1, false),
     death: new Sound(this.game, 'js/assets/playerDeath', ['wav'], 1, false),
     swordSwing: new Sound(this.game, 'js/assets/playerSwordSwing', ['wav'], 1, false),
+    placeShield: new Sound(this.game, 'js/assets/playerPlaceShield', ['wav'], 1, false),
   }
 
   this.dir = { x: 1, y: 0 };
@@ -233,7 +234,7 @@ Player.prototype.shieldUpdate = function(delta) {
     var fades = [];
     var hits = [];
 
-    //this.sounds.swordSwing.start();
+    this.sounds.placeShield.start();;
     this.cooldown = 2;
 
     if(this.dir.x == 0 && this.dir.y == -1) { // top-middle

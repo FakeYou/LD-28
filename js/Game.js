@@ -16,7 +16,10 @@ Game = function(domElement) {
 
   this.levels = [
     assets.level1,
-    assets.level2
+    assets.level2,
+    assets.level3,
+    assets.level4,
+    assets.levelFinal
   ];
   this.level = 0;
 
@@ -105,20 +108,34 @@ Game.prototype.update = function() {
 
 Game.prototype.resetGame = function() {
   this.level = 0;
+
+  this.hud.maxPlayerHealth = 0
+  this.hud.maxPlayerCooldown = 0
+  this.hud.maxMapTime = 0
+
   this.map.loadMap(this.levels[this.level]);
   this.player.respawn();
 }
 
 Game.prototype.restartLevel = function() {
+  this.hud.maxPlayerHealth = 0
+  this.hud.maxPlayerCooldown = 0
+  this.hud.maxMapTime = 0
+
   this.map.loadMap(this.levels[this.level]);
   this.player.respawn();
 }
 
 Game.prototype.nextLevel = function() {
   if(this.level < this.levels.length - 1) {
+    this.hud.maxPlayerHealth = 0
+    this.hud.maxPlayerCooldown = 0
+    this.hud.maxMapTime = 0
+
     this.level += 1;
     this.map.loadMap(this.levels[this.level]);
     this.player.respawn();
+    this.changeState(Game.ITEMSELECTION);
   }
 }
 

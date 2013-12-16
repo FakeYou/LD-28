@@ -1,21 +1,21 @@
 UI.ItemSelection = function(game) {
   UI.call(this, game);
 
-  this.sword = new UI.Element(this, 'SWORD', assets.sword, 2, 5, [39, 187, 232]);
+  this.sword = new UI.Element(this, 'SWORD', assets.sword, 10, 5, [39, 187, 232]);
   this.sword.speed = 2.5;
   this.addElement(this.sword);
 
-  this.shield = new UI.Element(this, 'SHIELD', assets.shield, 19, 5, [193, 63, 244]);
+  this.shield = new UI.Element(this, 'SHIELD', assets.shield, 27, 5, [193, 63, 244]);
   this.shield.speed = 2.5;
   this.addElement(this.shield);
 
-  this.boots = new UI.Element(this, 'BOOTS', assets.boots, 36, 5, [49, 194, 88]);
+  this.boots = new UI.Element(this, 'BOOTS', assets.boots, 44, 5, [49, 194, 88]);
   this.boots.speed = 2.5;
   this.addElement(this.boots);
 
-  this.lute = new UI.Element(this, 'LUTE', assets.lute, 53, 5, [247, 106, 20]);
-  this.lute.speed = 2.5;
-  this.addElement(this.lute);
+  // this.lute = new UI.Element(this, 'LUTE', assets.lute, 53, 5, [247, 106, 20]);
+  // this.lute.speed = 2.5;
+  // this.addElement(this.lute);
 
   this.swordSelect = new UI.Element(
     this,
@@ -44,27 +44,27 @@ UI.ItemSelection = function(game) {
   this.bootsSelect.visible = false;
   this.addElement(this.bootsSelect);
 
-  this.luteSelect = new UI.Element(
-    this,
-    assets.luteName,
-    assets.luteSelectMessage,
-    6, 20, [255, 255, 255]);
-  this.luteSelect.speed = 10;
-  this.luteSelect.visible = false;
-  this.addElement(this.luteSelect);
+  // this.luteSelect = new UI.Element(
+  //   this,
+  //   assets.luteName,
+  //   assets.luteSelectMessage,
+  //   6, 20, [255, 255, 255]);
+  // this.luteSelect.speed = 10;
+  // this.luteSelect.visible = false;
+  // this.addElement(this.luteSelect);
 
   this.items = [
     this.sword,
     this.shield,
     this.boots,
-    this.lute
+    // this.lute
   ]
 
   this.messages = [
     this.swordSelect,
     this.shieldSelect,
     this.bootsSelect,
-    this.luteSelect
+    // this.luteSelect
   ]
 
   this.setSelected(this.sword);

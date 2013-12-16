@@ -147,7 +147,7 @@ Map.prototype.buildTile = function(x, y) {
 
     default:
       tile = new Char(this.game, character);
-      tile.setFrontColor([255, 0, 0])
+      tile.setFrontColor([208, 183, 38])
   }
 
   tile.setPosition(x, y);
