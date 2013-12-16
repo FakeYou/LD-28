@@ -14,9 +14,12 @@ Player = function(game) {
   this.duration = 0;
   this.cooldown = 0;
 
+  this.fades = [];
+
   this.sounds = {
     takeDamage: new Sound(this.game, 'js/assets/playerTakeDamage', ['wav'], 1, false),
-    speedBoost: new Sound(this.game, 'js/assets/playerSpeedBoost', ['wav'], 1, false)
+    speedBoost: new Sound(this.game, 'js/assets/playerSpeedBoost', ['wav'], 1, false),
+    death: new Sound(this.game, 'js/assets/playerDeath', ['wav'], 1, false),
   }
 
   this.dir = { x: 0, y: 0 };
@@ -25,22 +28,9 @@ Player = function(game) {
 
   this.item = Player.BOOTS;
 
-  // this.corruption = new Tile.Effect(this, 2, {
-  //   before: function() { },
-  //   during: function() {
-  //     if(Math.random() > this.playtime / this.duration) {
-  //       this.tile.character = Math.random().toString(36).substr(7, 1);
-
-  //       if(chance.bool({ likelihood: 50 })) {
-  //         this.tile.currentFrontColor.negate();
-  //       }
-  //     }
-  //   },
-  //   after: function() {
-  //     this.tile.character = '@'
-  //     this.tile.currentFrontColor = this.tile.frontColor;
-  //   }
-  // });
+  this.effects = {
+    blink: new Tile.Effect(this, 3, this.game.effects.blink)
+  }
 }
 
 Player.prototype = Object.create(Tile.prototype);
@@ -62,6 +52,20 @@ Player.prototype.update = function(delta) {
 
   for(var key in this.sounds) {
     this.sounds[key].update(delta);
+  }
+
+  for(var key in this.effects) {
+    this.effects[key].update(delta);
+  }
+
+  for(var i = 0; i < this.fades.length; i++) {
+    if(!this.fades[i].done) {
+      this.fades[i].update(delta);
+    }
+    else {
+      this.game.map.removeEntity(this.fades[i]);
+      this.fades.splice(i, 1)
+    }
   }
 
   if(moveUpKey.pressed) {
@@ -124,20 +128,46 @@ Player.prototype.update = function(delta) {
   this.light.setPosition(this.x, this.y);
 }
 
+Player.prototype.takeDamage = function(amount) {
+  this.health -= amount;
+  this.effects.blink.restart();
+  this.sounds.takeDamage.start();
+
+  if(this.health <= 0) {
+    this.sounds.death.start();
+  }
+}
+
 Player.prototype.swordUpdate = function(delta) {
   var actionKey = this.game.keyboard.getKey(Keyboard.SPACE);
 
-  this.setBackColor([0, 0, 0]);
-
   if(actionKey.hit && this.cooldown < 0) {
     this.cooldown = 0.5;
-    this.setBackColor([255, 255, 255]);
 
-    var right = this.game.map.getTile(this.x + 1, this.y);
+    var swordColor = [39, 187, 232]
 
-    if(right instanceof Bat) {
-      this.game.map.removeEntity(right);
-    }
+    fade = new Fade(this.game, this.x, this.y - 1, 0.005, swordColor);
+    fade.dissipate = 0;
+    fade.relativeTo = this;
+    fade.offset = { x: 0, y: -1 }
+    this.fades.push(fade);
+    this.game.map.addEntity(fade);
+
+    fade = new Fade(this.game, this.x + 1, this.y, 0.005, swordColor);
+    fade.dissipate = -0.1;
+    fade.visible = false;
+    fade.relativeTo = this;
+    fade.offset = { x: 1, y: 0 }
+    this.fades.push(fade);
+    this.game.map.addEntity(fade);
+
+    fade = new Fade(this.game, this.x, this.y + 1, 0.005, swordColor);
+    fade.dissipate = -0.2;
+    fade.visible = false;
+    fade.relativeTo = this;
+    fade.offset = { x: 0, y: 1 }
+    this.fades.push(fade);
+    this.game.map.addEntity(fade);
   }
 }
 

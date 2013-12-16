@@ -74,7 +74,7 @@ Map.prototype.getTile = function(x, y) {
 
   var entity = this.getEntity(x, y);
 
-  if(entity != null) {
+  if(entity != null && entity.visible) {
     return entity;
   }
   else {

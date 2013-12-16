@@ -8,6 +8,9 @@ Game = function(domElement) {
   this.handlers = {};
   this.registerEvents();
 
+  this.effects = Effects;
+  this.volume = 1;
+
   this.map = new Map(this);
   this.player = new Player(this);
   this.player.setPosition(5, 5);
@@ -15,8 +18,6 @@ Game = function(domElement) {
 
   this.bat = new Bat(this, 20, 7);
   this.map.addEntity(this.bat);
-
-  this.volume = 1;
 
   this.sounds = {
     menuSelect: new Sound(this, 'js/assets/menuSelect', ['wav'], 1, false)

@@ -7,6 +7,16 @@ Bat = function(game, x, y) {
   this.damage = 1;
   this.cooldown = 0;
 
+  this.health = 5;
+
+  this.effects = {
+    blink: new Tile.Effect(this, 3, this.game.effects.blink)
+  }
+
+  this.sounds = {
+    attack: new Sound(this.game, 'js/assets/batAttack', ['wav'], 1, false)
+  }
+
   this.setFrontColor([0, 255, 255]);
   this.lit = false;
 
@@ -21,6 +31,14 @@ Bat.prototype.update = function(delta) {
   var playerY = this.game.player.y;
 
   this.cooldown -= delta;
+
+  for(var key in this.sounds) {
+    this.sounds[key].update(delta);
+  }
+
+  for(var key in this.effects) {
+    this.effects[key].update(delta);
+  }
 
   if(this.distanceFrom(playerX, playerY) < 8) {
     this.target.x = playerX;
@@ -53,9 +71,12 @@ Bat.prototype.update = function(delta) {
   this.y = Math.round(this._y);
 
   if(this.x == playerX && this.y == playerY && this.cooldown < 0) {
-    this.game.player.health -= this.damage;
-    this.game.player.sounds.takeDamage.start();
+    this.game.player.takeDamage(this.damage);
+    this.sounds.attack.start();
     this.cooldown = 1;
-    console.log('bam')
   }
+}
+
+Bat.prototype.takeDamage = function(amount) {
+
 }
