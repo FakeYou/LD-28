@@ -15,9 +15,9 @@ Renderer = function(game, canvas, width, height) {
 
   this.buffer = [];
 
-  for(var y = 0; y < this.width; y++) {
+  for(var j = 0; j < this.height; j++) {
     var row = [];
-    for(var x = 0; x < this.height; x++) {
+    for(var i = 0; i < this.width; i++) {
       row.push(null);
     }
     this.buffer.push(row);
@@ -31,6 +31,9 @@ Renderer.prototype.updateStyle = function() {
   this.ctx.textBaseline = 'middle';
   this.textWidth = this.ctx.measureText('M').width;
   this.textHeight = parseInt(style.fontSize, 10);
+
+  this.textHeight = 19;
+  this.textWidth = 11;
 }
 
 Renderer.prototype.fillBuffer = function() {
@@ -45,14 +48,26 @@ Renderer.prototype.fillBuffer = function() {
       var x = i + startX;
       var y = j + startY;
 
-      this.buffer[j][i] = this.game.map.getTile(x, y);
+      var tile = null;
 
-      if(this.buffer[j][i] instanceof Player) {
-        if(j != 10 || i != 10) {
+      for(var k = 0; k < this.game.uis.length; k++) {
+        var ui = this.game.uis[k];
 
-          console.log(j, i)
+        if(ui.visible) {
+          var element = ui.getElement(i, j);
+
+          if(element) {
+            tile = element.getTile(i, j);
+            break;
+          }
         }
       }
+
+      if(tile == null) {
+        tile = this.game.map.getTile(x, y);
+      }
+
+      this.buffer[j][i] = tile;
     }
   }
 }

@@ -2,27 +2,50 @@ Map = function(game) {
   this.game = game;
 
   this.map = [
-    '                       ',
-    '                       ',
-    '   #################   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #···············#   ',
-    '   #################   ',
-    '                       ',
-    '                       ',
+    '                                ',
+    ' ############################## ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' #····························# ',
+    ' ##···######################### ',
+    '  #···#                         ',
+    '  #···#                         ',
+    '  #···#             #####       ',
+    '  #···########      #···####    ',
+    '  #··········#      #······#    ',
+    '  #···######·#      #··###·#    ',
+    '  #####    #·#      ######·#### ',
+    '           #·#          #·····# ',
+    '           #·#          #·····# ',
+    '           #·############·····# ',
+    '           #··················# ',
+    '           ####·############### ',
+    ' ##########   #·#     #····#    ',
+    ' #········##  #·#     #·#··#    ',
+    ' #··####···#  #·#     #·#··#    ',
+    ' #·········#  #·#     #·######  ',
+    ' #·········#  #·#     #······#  ',
+    ' ##·########  #·#     #······#  ',
+    '  #·#         #·#     #####·##  ',
+    '  #·#         #·#         #·#   ',
+    '  #·#   #######·#         #·#   ',
+    '  #·#   #·······#         #·#   ',
+    '  #·#   #·····#·#         #·#   ',
+    '  #·#   #·····#·#         #·#   ',
+    '  #·#   #·····#·#         #·#   ',
+    '  #·#   #·····#·#         #·#   ',
+    '  #·#   #######·#         #·#   ',
+    '  #·#         #·###########·#   ',
+    '  #·#         #·············#   ',
+    '  #·#############·###########   ',
+    '  #···············#             ',
+    '  #################             ',
+    '                                ',
   ];
 
   this.width = this.map[0].length;
@@ -31,13 +54,12 @@ Map = function(game) {
   this.tiles = [];
   this.entities = [];
   this._entitiesLookup = {};
+
+  this.lights = [];
+  this._lightsLookup = {};
+
   this.buildTiles();
-
 }
-
-Map.WALL = new Tile('#');
-Map.WALL.frontColor = [100, 100, 100];
-Map.WALL.walkable = false;
 
 Map.FLOOR = new Tile('·');
 Map.FLOOR.frontColor = [50, 50, 50];
@@ -60,16 +82,6 @@ Map.prototype.getTile = function(x, y) {
   }
 }
 
-Map.prototype.getEntity = function(x, y) {
-  var key = x + ',' + y;
-
-  if(this._entitiesLookup[key]) {
-    return this._entitiesLookup[key];
-  }
-
-  return null;
-}
-
 Map.prototype.buildTiles = function() {
   for(var y = 0; y < this.height; y++) {
     this.tiles[y] = [];
@@ -90,13 +102,17 @@ Map.prototype.buildTile = function(x, y) {
 
   switch(character) {
     case '#':
-      tile = Map.WALL.clone();
+      tile = new Wall(this.game);
       break;
     case '·':
-      tile = Map.FLOOR.clone();
+      tile = new Floor(this.game);
+      break;
+    case ' ':
+      tile = new Clear(this.game);
       break;
     default:
-      tile = Map.CLEAR.clone();
+      tile = new Char(this.game, character);
+      tile.setFrontColor([255, 0, 0])
   }
 
   tile.setPosition(x, y);
@@ -122,4 +138,61 @@ Map.prototype.addEntity = function(entity) {
 
   this.entities.push(entity);
   this._entitiesLookup[key] = entity;
+}
+
+Map.prototype.getEntity = function(x, y) {
+  var key = x + ',' + y;
+
+  if(this._entitiesLookup[key]) {
+    return this._entitiesLookup[key];
+  }
+
+  return null;
+}
+
+Map.prototype.removeEntity = function(entity) {
+  var key = entity.x + ',' + entity.y;
+
+  if(this._entitiesLookup[key] === entity) {
+    delete this._entitiesLookup[key];
+  }
+
+  var index = this.entities.indexOf(entity);
+  if(index != -1) {
+    this.entities.splice(index, 1);
+  }
+}
+
+Map.prototype.addLight = function(light) {
+  var key = light.x + ',' + light.y;
+
+  this.lights.push(light);
+  this._lightsLookup[key] = light
+}
+
+Map.prototype.getLight = function(x, y) {
+  var key = x + ',' + y;
+
+  if(this._lightsLookup[key]) {
+    return this._lightsLookup[key];
+  }
+
+  return null;
+}
+
+Map.prototype.getLights = function() {
+  return this.lights;
+}
+
+Map.prototype.removeLight = function(light) {
+  var key = light.x + ',' + light.y;
+
+  if(this._lightsLookup[key] === light) {
+    delete this._lightsLookup[key];
+  }
+
+  var index = this.lights.indexOf(light);
+  if(index != -1) {
+    this.lights.splice(index, 1);
+  }
 }

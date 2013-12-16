@@ -8,11 +8,19 @@
      url('../fonts/DejaVuSansMono.ttf') format('truetype');
 }
 
-#canvas {
-  font-family: "DejaVuSansMono", "DejaVu Sans Mono", monospace;
+@font-face {
+  font-family: 'SourceCodePro';
+  src: url('../fonts/SourceCodePro-Regular.eot');
+  src: url('../fonts/SourceCodePro-Regular.eot?#iefix') format('eot'),
+    url('../fonts/SourceCodePro-Regular.ttf.woff') format('woff')
+}
+
+#canvas, .test {
+  font-family: "SourceCodePro", "Source Code Pro", monospace;
   white-space: pre;
   text-align: center;
-  line-height: 1;
-  letter-spacing: 0px;
+  line-height: 20px;
+  letter-spacing: 4px;
+  font-size: 16px;
   display: inline-block;
 }

@@ -9,14 +9,17 @@ Tile = function(character, x, y) {
   this.visible = true;
   this.walkable = true;
 
-  this.frontColor = Tile.GREY;
-  this.backColor = [0, 0, 0];
+  this.lit = true;
+
+  this.setFrontColor(Tile.PINK);
+  this.setBackColor(Tile.BLACK);
 
   this.currentFrontColor = this.frontColor;
   this.currentBackColor = this.backColor;
 }
 
 Tile.BLACK = [0, 0, 0];
+Tile.PINK = [255, 0, 255];
 Tile.GREY = [100, 100, 100];
 
 Tile.prototype.setPosition = function(x, y) {
@@ -28,26 +31,48 @@ Tile.prototype.setPosition = function(x, y) {
 }
 
 Tile.prototype.setFrontColor = function(color) {
-  this.frontColor = color;
-  this.currentFrontColor = this.frontColor;
+  this.frontColor = Color().rgb(color);
+  this.currentFrontColor = Color().rgb(color);
 }
 
 Tile.prototype.getFrontColor = function() {
-  var colors = [];
-
-  for(var i = 0; i < this.currentFrontColor.length; i++) {
-    colors.push(Math.round(this.currentFrontColor[i]));
+  if(!this.lit || true) {
+    return this.frontColor.rgbString();
   }
 
-  return 'rgb(' + colors.join(',') + ')';
+  var color = this.currentFrontColor.clone();
+  color.alpha(0.2);
+
+  var lights = this.game.map.getLights();
+  var isLit = false;
+  for(var i = 0; i < lights.length; i++) {
+    var light = lights[i].getLight(this.x, this.y);
+    var intensity = light.alpha() / 2;
+
+    if(light) {
+      color.mix(light, intensity);
+      isLit = true;
+    }
+  }
+
+  if(!isLit) {
+    color.mix(Color({ r: 0, g: 0, b: 0}));
+  }
+  else {
+    color.mix(this.currentFrontColor, 0.5)
+  }
+
+  return color.rgbString();
 }
 
 Tile.prototype.setBackColor = function(color) {
-  this.backColor = color;
-  this.currentBackColor = this.backColor;
+  this.backColor = Color().rgb(color);
+  this.currentBackColor = Color().rgb(color);
 }
 
 Tile.prototype.getBackColor = function() {
+  return this.currentBackColor.rgbString();
+
   var colors = [];
 
   for(var i = 0; i < this.currentBackColor.length; i++) {
@@ -55,6 +80,13 @@ Tile.prototype.getBackColor = function() {
   }
 
   return 'rgb(' + colors.join(',') + ')';
+}
+
+Tile.prototype.distanceFrom = function(x, y) {
+  var dx = Math.abs(this.x - x);
+  var dy = Math.abs(this.y - y);
+
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 Tile.prototype.clone = function() {
