@@ -68,12 +68,20 @@ UI.Menu.prototype.update = function(delta) {
   if(this.game.started) {
     this.restartButton.enabled = true;
     this.resumeButton.enabled = true;
-    this.playButton.enabled = false;
+
+    if(this.playButton.content != assets.resetButton) {
+      this.playButton.content = assets.resetButton;
+      this.playButton.buildTiles();
+    }
   }
   else {
     this.restartButton.enabled = false;
     this.resumeButton.enabled = false;
-    this.playButton.enabled = true;
+
+    if(this.playButton.content != assets.playButton) {
+      this.playButton.content = assets.playButton;
+      this.playButton.buildTiles();
+    }
   }
 
   if(moveUpKey.hit) {
@@ -101,10 +109,15 @@ UI.Menu.prototype.update = function(delta) {
   if(selectItemKey.hit) {
     this.game.sounds.menuSelect.start();
     if(this.selected == this.playButton) {
+      this.game.resetGame();
       this.game.changeState(Game.ITEMSELECTION);
     }
     if(this.selected == this.resumeButton) {
       this.game.changeState(Game.PLAYING);
+    }
+    if(this.selected == this.restartButton) {
+      this.game.restartLevel();
+      this.game.changeState(Game.ITEMSELECTION);
     }
   }
 }

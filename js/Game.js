@@ -13,11 +13,14 @@ Game = function(domElement) {
 
   this.map = new Map(this);
   this.player = new Player(this);
-  this.player.setPosition(5, 5);
-  this.map.addEntity(this.player);
 
-  this.bat = new Bat(this, 20, 7);
-  this.map.addEntity(this.bat);
+  this.levels = [
+    assets.level1,
+    assets.level2
+  ];
+  this.level = 0;
+
+  this.map.loadMap(this.levels[this.level]);
 
   this.sounds = {
     menuSelect: new Sound(this, 'js/assets/menuSelect', ['wav'], 1, false)
@@ -86,7 +89,6 @@ Game.prototype.update = function() {
 
   if(this.state == Game.PLAYING) {
     this.player.update(this.delta);
-    this.bat.update(this.delta);
     this.map.update(this.delta);
     this.hud.update(this.delta);
   }
@@ -99,6 +101,25 @@ Game.prototype.update = function() {
 
   this.renderer.fillBuffer();
   this.renderer.render();
+}
+
+Game.prototype.resetGame = function() {
+  this.level = 0;
+  this.map.loadMap(this.levels[this.level]);
+  this.player.respawn();
+}
+
+Game.prototype.restartLevel = function() {
+  this.map.loadMap(this.levels[this.level]);
+  this.player.respawn();
+}
+
+Game.prototype.nextLevel = function() {
+  if(this.level < this.levels.length - 1) {
+    this.level += 1;
+    this.map.loadMap(this.levels[this.level]);
+    this.player.respawn();
+  }
 }
 
 Game.prototype.changeState = function(state) {

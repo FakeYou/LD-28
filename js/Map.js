@@ -1,64 +1,5 @@
 Map = function(game) {
   this.game = game;
-
-  this.map = [
-    '                                ',
-    ' ############################## ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' #····························# ',
-    ' ##···######################### ',
-    '  #···#                         ',
-    '  #···#                         ',
-    '  #···#             #####       ',
-    '  #···########      #···####    ',
-    '  #··········#      #······#    ',
-    '  #···######·#      #··###·#    ',
-    '  #####    #·#      ######·#### ',
-    '           #·#          #·····# ',
-    '           #·#          #·····# ',
-    '           #·############·····# ',
-    '           #··················# ',
-    '           ###···############## ',
-    ' ##########  ##·##    #····#    ',
-    ' #········##  #·#     #·#··#    ',
-    ' #··####···#  #·#     #·#··#    ',
-    ' #·········#  #·#     #·######  ',
-    ' #·········#  #·#     #······#  ',
-    ' ##·########  #·#     #······#  ',
-    '  #·#         #·#     #####·##  ',
-    '  #·#         #·#         #·#   ',
-    '  #·#   #######·#         #·#   ',
-    '  #·#   #·······#         #·#   ',
-    '  #·#   #·····#·#         #·#   ',
-    '  #·#   #·····#·#         #·#   ',
-    '  #·#   #·····#·#         #·#   ',
-    '  #·#   #·····#·#         #·#   ',
-    '  #·#   #######·#         #·#   ',
-    '  #·#         #·###########·#   ',
-    '  #·#         #·············#   ',
-    '  #·#############·###########   ',
-    '  #···············#             ',
-    '  #################             ',
-    '                                ',
-  ];
-
-  this.width = this.map[0].length;
-  this.height = this.map.length;
-
-  this.tiles = [];
-  this.entities = [];
-  this._entitiesLookup = {};
-
-  this.lights = [];
-  this._lightsLookup = {};
-
-  this.buildTiles();
 }
 
 Map.FLOOR = new Tile('·');
@@ -66,6 +7,25 @@ Map.FLOOR.frontColor = [50, 50, 50];
 
 Map.CLEAR = new Tile(' ');
 Map.CLEAR.frontColor = [0, 0, 0];
+
+Map.prototype.loadMap = function(map) {
+  this.map = map;
+
+  this.width = this.map[0].length;
+  this.height = this.map.length;
+
+  this.tiles = [];
+
+  this.entities = [];
+  this._entitiesLookup = [];
+
+  this.lights = [];
+  this._lightsLookup = [];
+
+  this.addEntity(this.game.player);
+
+  this.buildTiles();
+}
 
 Map.prototype.getTile = function(x, y) {
   if(x < 0 || y < 0 || x >= this.width || y >= this.height) {
@@ -90,6 +50,41 @@ Map.prototype.getMapTile = function(x, y) {
   return this.tiles[y][x];
 }
 
+Map.prototype.getMob = function(x, y) {
+  if(x < 0 || y < 0 || x >= this.width || y >= this.height) {
+    return null
+  }
+
+  for(var i = 0; i < this.entities.length; i++) {
+    var entity = this.entities[i];
+
+    if(entity.x == x && entity.y == y && entity.isMob) {
+      return entity;
+    }
+  }
+
+  return null
+}
+
+Map.prototype.addMob = function(mob) {
+  var key = mob.x + ',' + mob.y;
+
+  this.entities.push(mob);
+  this._entitiesLookup[key] = mob;
+}
+
+Map.prototype.getMobs = function() {
+  var mobs = [];
+
+  for(var i = 0; i < this.entities.length; i++) {
+    if(this.entities[i].isMob) {
+      mobs.push(this.entities[i])
+    }
+  }
+
+  return mobs;
+}
+
 Map.prototype.buildTiles = function() {
   for(var y = 0; y < this.height; y++) {
     this.tiles[y] = [];
@@ -109,15 +104,47 @@ Map.prototype.buildTile = function(x, y) {
   var tile;
 
   switch(character) {
+    // player
+    case '@':
+      this.game.player.setPosition(x, y);
+      this.game.player.spawn = { x: x, y: y };
+      tile = new Floor(this.game);
+      break;
+
+    // bat
+    case 'v':
+      var bat = new Bat(this.game, x, y);
+      this.addEntity(bat);
+      tile = new Floor(this.game);
+      break;
+
+    // exit
+    case '∩':
+      tile = new Exit(this.game);
+      break;
+
+    // potion
+    case 'ტ':
+      var potion = new Potion(this.game, x, y);
+      this.addEntity(potion);
+      tile = new Floor(this.game);
+      break;
+
+    // wall
     case '#':
       tile = new Wall(this.game);
       break;
-    case '·':
+
+    // floor
+    case '.':
       tile = new Floor(this.game);
       break;
+
+    // clear
     case ' ':
       tile = new Clear(this.game);
       break;
+
     default:
       tile = new Char(this.game, character);
       tile.setFrontColor([255, 0, 0])
@@ -133,10 +160,20 @@ Map.prototype.update = function(delta) {
 
   for(var i = 0; i < this.entities.length; i++) {
     var entity = this.entities[i];
-
     var key = entity.x + ',' + entity.y;
-
     this._entitiesLookup[key] = entity;
+  }
+
+  for(var i = 0; i < this.entities.length; i++) {
+    var entity = this.entities[i];
+    if(!entity.alive) {
+      this.removeEntity(entity);
+      continue;
+    }
+
+    if(!(entity instanceof Player)) {
+      entity.update(delta);
+    }
   }
 
   for(var y = 0; y < this.height; y++) {
@@ -145,7 +182,6 @@ Map.prototype.update = function(delta) {
     }
   }
 }
-
 
 Map.prototype.addEntity = function(entity) {
   var key = entity.x + ',' + entity.y;

@@ -3,18 +3,23 @@ Bat = function(game, x, y) {
 
   this.game = game;
 
+  this.isMob = true;
+  this.alive = true;
+
   this.speed = 5;
   this.damage = 1;
   this.cooldown = 0;
 
-  this.health = 5;
+  this.health = 2;
 
   this.effects = {
     blink: new Tile.Effect(this, 3, this.game.effects.blink)
   }
 
   this.sounds = {
-    attack: new Sound(this.game, 'js/assets/batAttack', ['wav'], 1, false)
+    attack: new Sound(this.game, 'js/assets/batAttack', ['wav'], 1, false),
+    takeDamage: new Sound(this.game, 'js/assets/batTakeDamage', ['wav'], 1, false),
+    death: new Sound(this.game, 'js/assets/batDeath', ['wav'], 1, false)
   }
 
   this.setFrontColor([0, 255, 255]);
@@ -67,16 +72,27 @@ Bat.prototype.update = function(delta) {
     }
   }
 
-  this.x = Math.round(this._x);
-  this.y = Math.round(this._y);
-
-  if(this.x == playerX && this.y == playerY && this.cooldown < 0) {
-    this.game.player.takeDamage(this.damage);
-    this.sounds.attack.start();
-    this.cooldown = 1;
+  if(Math.round(this._x) == playerX && Math.round(this._y) == playerY) {
+    if(this.cooldown < 0) {
+      this.game.player.takeDamage(this.damage);
+      this.sounds.attack.start();
+      this.cooldown = 1;
+    }
+  }
+  else {
+    this.x = Math.round(this._x);
+    this.y = Math.round(this._y);
   }
 }
 
 Bat.prototype.takeDamage = function(amount) {
+  console.log(this.health, amount)
+  this.health -= amount;
+  this.effects.blink.restart();
+  this.sounds.takeDamage.start();
 
+  if(this.health <= 0) {
+    this.sounds.death.start();
+    this.alive = false;
+  }
 }

@@ -1,7 +1,7 @@
 Fade = function(game, x, y, duration, color) {
   Entity.call(this, '█', x, y)
 
-  this.characters = [' ', '░','▒','▓','█'];
+  this.characters = [' ','░','▒','▓','█'];
   this.duration = duration || 1;
   this.color = color || [255, 255, 255];
 
